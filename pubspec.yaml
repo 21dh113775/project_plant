@@ -14,6 +14,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.2
   page_transition:
   sqflite: ^2.4.1
+  intl: ^0.20.1
  
 
 dev_dependencies:

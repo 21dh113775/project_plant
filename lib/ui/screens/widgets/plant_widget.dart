@@ -84,10 +84,10 @@ class PlantWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.only(right: 10),
               child: Text(
-                r'$' + plantList[index].price.toString(),
+                plantList[index].price.toString() + " " + r'vnđ',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+                  fontSize: 15.0,
                   color: Constants.primaryColor,
                 ),
               ),

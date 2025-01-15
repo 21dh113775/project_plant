@@ -23,11 +23,11 @@ class _HomePageState extends State<HomePage> {
 
     //Plants category
     List<String> _plantTypes = [
-      'Recommended',
-      'Indoor',
-      'Outdoor',
-      'Garden',
-      'Supplement',
+      'Đề xuất',
+      'Trong nhà',
+      'Ngoài trời',
+      'Vườn',
+      'Bổ sung',
     ];
 
     //Toggle Favorite button
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                           child: TextField(
                         showCursor: false,
                         decoration: InputDecoration(
-                          hintText: 'Search Plant',
+                          hintText: 'Tìm kiếm cây',
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
                         ),
@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                r'$' + _plantList[index].price.toString(),
+                                '${_plantList[index].price} vnđ',
                                 style: TextStyle(
                                     color: Constants.primaryColor,
                                     fontSize: 16),
@@ -224,7 +224,7 @@ class _HomePageState extends State<HomePage> {
           Container(
             padding: const EdgeInsets.only(left: 16, bottom: 20, top: 20),
             child: const Text(
-              'New Plants',
+              'Cây mới',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,

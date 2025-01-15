@@ -12,10 +12,10 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   // Các biến trạng thái để lưu lựa chọn của người dùng
-  String selectedSize = "Small";
-  String selectedColor = "Red";
-  String selectedCoupon = "No Coupon";
-  String selectedService = "Standard";
+  String selectedSize = "Nhỏ";
+  String selectedColor = "Đỏ";
+  String selectedCoupon = "Không có mã giảm giá";
+  String selectedService = "Tiêu chuẩn";
 
   // Toggle Favorite button
   bool toggleIsFavorated(bool isFavorited) {
@@ -35,7 +35,7 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Top bar với nút đóng và yêu thích
+          // Thanh điều hướng trên cùng với nút đóng và yêu thích
           Positioned(
             top: 50,
             left: 20,
@@ -115,18 +115,19 @@ class _DetailPageState extends State<DetailPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           PlantFeature(
-                            title: 'Size',
+                            title: 'Kích thước',
                             plantFeature: _plantList[widget.plantId].size,
                           ),
                           PlantFeature(
-                            title: 'Humidity',
+                            title: 'Độ ẩm',
                             plantFeature:
-                                _plantList[widget.plantId].humidity.toString(),
+                                _plantList[widget.plantId].humidity.toString() +
+                                    '%',
                           ),
                           PlantFeature(
-                            title: 'Temperature',
+                            title: 'Nhiệt độ',
                             plantFeature:
-                                _plantList[widget.plantId].temperature,
+                                _plantList[widget.plantId].temperature + '°C',
                           ),
                         ],
                       ),
@@ -173,7 +174,8 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            r'$' + _plantList[widget.plantId].price.toString(),
+                            _plantList[widget.plantId].price.toString() +
+                                ' VNĐ',
                             style: TextStyle(
                               color: Constants.blackColor,
                               fontSize: 24.0,
@@ -187,13 +189,13 @@ class _DetailPageState extends State<DetailPage> {
                           Text(
                             _plantList[widget.plantId].rating.toString(),
                             style: TextStyle(
-                              fontSize: 30.0,
+                              fontSize: 18.0,
                               color: Constants.primaryColor,
                             ),
                           ),
                           Icon(
                             Icons.star,
-                            size: 30.0,
+                            size: 18.0,
                             color: Constants.primaryColor,
                           ),
                         ],
@@ -240,7 +242,7 @@ class _DetailPageState extends State<DetailPage> {
                               Text("Kích thước"),
                               DropdownButton<String>(
                                 value: selectedSize,
-                                items: ["Small", "Medium", "Large"]
+                                items: ["Nhỏ", "Vừa", "Lớn"]
                                     .map((size) => DropdownMenuItem(
                                           value: size,
                                           child: Text(size),
@@ -255,7 +257,7 @@ class _DetailPageState extends State<DetailPage> {
                               Text("Màu sắc"),
                               DropdownButton<String>(
                                 value: selectedColor,
-                                items: ["Red", "Green", "Blue"]
+                                items: ["Đỏ", "Xanh lá", "Xanh dương"]
                                     .map((color) => DropdownMenuItem(
                                           value: color,
                                           child: Text(color),
