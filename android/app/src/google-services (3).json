@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "247698430541",
+    "project_id": "project-plant-eead2",
+    "storage_bucket": "project-plant-eead2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247698430541:android:067fd46f30bfa070585a04",
+        "android_client_info": {
+          "package_name": "com.example.project_plant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbnC9kbeXNIAM6HLDGjgWKXzP-NOcgdTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
