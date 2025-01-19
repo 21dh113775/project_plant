@@ -15,6 +15,8 @@ dependencies:
   page_transition:
   sqflite: ^2.4.1
   intl: ^0.20.1
+  flutter_bloc: ^9.0.0
+  equatable: ^2.0.7
  
 
 dev_dependencies:
