@@ -5,10 +5,8 @@ import 'package:project_plant/blocs/envent/signin_event.dart';
 import 'package:project_plant/blocs/signin_bloc.dart';
 import 'package:project_plant/blocs/state/signin_state.dart';
 import 'package:project_plant/constants.dart';
-
 import 'package:project_plant/ui/root_page.dart';
 import 'package:project_plant/ui/screens/forgot_pasword.dart';
-
 import 'package:project_plant/ui/screens/signup_page.dart';
 import 'package:project_plant/ui/screens/widgets/custom_textfied.dart';
 
@@ -23,6 +21,7 @@ class SignIn extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
 
     return BlocProvider(
+      // Cung cấp SignInBloc cho cây widget con
       create: (context) => SignInBloc(),
       child: BlocConsumer<SignInBloc, SignInState>(
         listener: (context, state) {
@@ -76,6 +75,7 @@ class SignIn extends StatelessWidget {
                     else
                       GestureDetector(
                         onTap: () {
+                          // Gửi sự kiện đăng nhập với email và password
                           context.read<SignInBloc>().add(
                                 SignInWithEmailPasswordEvent(
                                   email: _emailController.text,

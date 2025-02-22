@@ -1,6 +1,6 @@
-import 'package:project_plant/models/account.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'dart:async';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -10,7 +10,7 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('app_database.db');
+    _database = await _initDB('users.db');
     return _database!;
   }
 
@@ -18,21 +18,32 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _createDB,
-    );
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
-    Future _createDB(Database db, int version) async {
-      await AccountDatabase.createTable(db);
-    }
+    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const textType = 'TEXT NOT NULL';
+    const boolType = 'BOOLEAN NOT NULL';
+
+    await db.execute('''
+    CREATE TABLE users (
+      id $idType,
+      fullName $textType,
+      email $textType,
+      password $textType,
+      acceptTerms $boolType
+    )
+    ''');
   }
 
-  Future close() async {
+  Future<int> createUser(Map<String, dynamic> user) async {
     final db = await instance.database;
-    db.close();
+    return await db.insert('users', user);
+  }
+
+  Future<List<Map<String, dynamic>>> getUsers() async {
+    final db = await instance.database;
+    return await db.query('users');
   }
 }

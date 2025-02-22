@@ -5,9 +5,11 @@ import 'package:project_plant/blocs/envent/signup_event.dart';
 import 'package:project_plant/blocs/signup_bloc.dart';
 import 'package:project_plant/blocs/state/signup_state.dart';
 import 'package:project_plant/constants.dart';
+import 'package:project_plant/models/database/databaseHelper.dart';
 import 'package:project_plant/ui/screens/signin_page.dart';
 import 'package:project_plant/ui/screens/widgets/custom_textfied.dart';
 import 'package:project_plant/ui/screens/widgets/password_strength_indicator.dart';
+// Thêm import cho DatabaseHelper
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -119,6 +121,37 @@ class _SignUpBodyState extends State<SignUpBody> {
     return null;
   }
 
+  // Phương thức lưu thông tin người dùng vào SQLite
+  Future<void> _registerUser() async {
+    if (_validateInputs()) {
+      final user = {
+        'fullName': _fullNameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text.trim(),
+        'acceptTerms': _acceptTerms ? 1 : 0, // Lưu giá trị bool thành 1/0
+      };
+
+      // Lưu thông tin người dùng vào SQLite
+      await DatabaseHelper.instance.createUser(user);
+
+      // Sau khi lưu, thông báo và chuyển hướng đến trang đăng nhập
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        PageTransition(
+          child: SignIn(),
+          type: PageTransitionType.bottomToTop,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -129,45 +162,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         child: BlocListener<SignupBloc, SignupState>(
           listener: (context, state) {
             if (state is SignupSuccess) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => AlertDialog(
-                  title: const Text('Success'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.green,
-                        size: 50,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Account created successfully!'),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Welcome, ${_fullNameController.text}!',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          PageTransition(
-                            child: SignIn(),
-                            type: PageTransitionType.bottomToTop,
-                          ),
-                        );
-                      },
-                      child: const Text('Login'),
-                    ),
-                  ],
-                ),
-              );
+              _registerUser(); // Gọi phương thức lưu người dùng vào cơ sở dữ liệu
             } else if (state is SignupFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -198,7 +193,6 @@ class _SignUpBodyState extends State<SignUpBody> {
                         ),
                       ),
                     ),
-
                     const Text(
                       'Create Account',
                       style: TextStyle(
@@ -216,97 +210,73 @@ class _SignUpBodyState extends State<SignUpBody> {
                       ),
                     ),
                     const SizedBox(height: 35),
-
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: CustomTextfield(
-                        controller: _emailController,
-                        obscureText: false,
-                        hintText: 'Email',
-                        icon: Icons.alternate_email,
-                        validator: _validateEmail,
-                      ),
+                    CustomTextfield(
+                      controller: _emailController,
+                      obscureText: false,
+                      hintText: 'Email',
+                      icon: Icons.alternate_email,
+                      validator: _validateEmail,
                     ),
-
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: CustomTextfield(
-                        controller: _fullNameController,
-                        obscureText: false,
-                        hintText: 'Full Name',
-                        icon: Icons.person_outline,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Full name is required';
-                          }
-                          return null;
+                    CustomTextfield(
+                      controller: _fullNameController,
+                      obscureText: false,
+                      hintText: 'Full Name',
+                      icon: Icons.person_outline,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Full name is required';
+                        }
+                        return null;
+                      },
+                    ),
+                    CustomTextfield(
+                      controller: _passwordController,
+                      obscureText: !_showPassword,
+                      hintText: 'Password',
+                      icon: Icons.lock_outline,
+                      validator: _validatePassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Constants.primaryColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _showPassword = !_showPassword;
+                          });
                         },
                       ),
                     ),
-
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: CustomTextfield(
-                        controller: _passwordController,
-                        obscureText: !_showPassword,
-                        hintText: 'Password',
-                        icon: Icons.lock_outline,
-                        validator: _validatePassword,
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _showPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Constants.primaryColor,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _showPassword = !_showPassword;
-                            });
-                          },
+                    CustomTextfield(
+                      controller: _confirmPasswordController,
+                      obscureText: !_showConfirmPassword,
+                      hintText: 'Confirm Password',
+                      icon: Icons.lock_outline,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Constants.primaryColor,
                         ),
-                      ),
-                    ),
-
-                    //Padding(
-                    //padding: const EdgeInsets.only(bottom: 16),
-                    //child: PasswordStrengthIndicator(
-                    // strength: _passwordStrength,
-                    // ),
-                    //),
-
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 24),
-                      child: CustomTextfield(
-                        controller: _confirmPasswordController,
-                        obscureText: !_showConfirmPassword,
-                        hintText: 'Confirm Password',
-                        icon: Icons.lock_outline,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
+                        onPressed: () {
+                          setState(() {
+                            _showConfirmPassword = !_showConfirmPassword;
+                          });
                         },
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _showConfirmPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Constants.primaryColor,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _showConfirmPassword = !_showConfirmPassword;
-                            });
-                          },
-                        ),
                       ),
                     ),
-
                     CheckboxListTile(
                       value: _acceptTerms,
                       onChanged: (value) {
@@ -332,68 +302,44 @@ class _SignUpBodyState extends State<SignUpBody> {
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
                     ),
-
                     const SizedBox(height: 16),
-
-                    BlocBuilder<SignupBloc, SignupState>(
-                      builder: (context, state) {
-                        if (state is SignupLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        return GestureDetector(
-                          onTap: () {
-                            if (_validateInputs()) {
-                              context.read<SignupBloc>().add(
-                                    SignupSubmitted(
-                                      email: _emailController.text.trim(),
-                                      fullName: _fullNameController.text.trim(),
-                                      password: _passwordController.text.trim(),
-                                    ),
-                                  );
-                            }
-                          },
-                          child: Container(
-                            width: size.width,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Constants.primaryColor,
-                                  Constants.primaryColor.withOpacity(0.8),
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      Constants.primaryColor.withOpacity(0.3),
-                                  spreadRadius: 1,
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                    GestureDetector(
+                      onTap: _registerUser, // Gọi phương thức đăng ký
+                      child: Container(
+                        width: size.width,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Constants.primaryColor,
+                              Constants.primaryColor.withOpacity(0.8),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Constants.primaryColor.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                            child: const Center(
-                              child: Text(
-                                'Create Account',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Create Account',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      },
+                        ),
+                      ),
                     ),
-
                     const SizedBox(height: 20),
-
                     Center(
                       child: GestureDetector(
                         onTap: () {
@@ -430,14 +376,5 @@ class _SignUpBodyState extends State<SignUpBody> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _fullNameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
   }
 }
