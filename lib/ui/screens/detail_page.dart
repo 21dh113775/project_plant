@@ -11,12 +11,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  // Các biến trạng thái để lưu lựa chọn của người dùng
-  String selectedSize = "Nhỏ";
-  String selectedColor = "Đỏ";
-  String selectedCoupon = "Không có mã giảm giá";
-  String selectedService = "Tiêu chuẩn";
-
   // Toggle Favorite button
   bool toggleIsFavorated(bool isFavorited) {
     return !isFavorited;
@@ -25,6 +19,16 @@ class _DetailPageState extends State<DetailPage> {
   // Toggle add/remove from cart
   bool toggleIsSelected(bool isSelected) {
     return !isSelected;
+  }
+
+  // Show snackBar when item is added to cart
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -230,57 +234,9 @@ class _DetailPageState extends State<DetailPage> {
               width: 50,
               child: IconButton(
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(_plantList[widget.plantId].plantName),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Kích thước"),
-                              DropdownButton<String>(
-                                value: selectedSize,
-                                items: ["Nhỏ", "Vừa", "Lớn"]
-                                    .map((size) => DropdownMenuItem(
-                                          value: size,
-                                          child: Text(size),
-                                        ))
-                                    .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedSize = value!;
-                                  });
-                                },
-                              ),
-                              Text("Màu sắc"),
-                              DropdownButton<String>(
-                                value: selectedColor,
-                                items: ["Đỏ", "Xanh lá", "Xanh dương"]
-                                    .map((color) => DropdownMenuItem(
-                                          value: color,
-                                          child: Text(color),
-                                        ))
-                                    .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedColor = value!;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          ElevatedButton(
-                            child: Text("Xác nhận"),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                  setState(() {
+                    _showSnackBar("Đã thêm vào giỏ hàng");
+                  });
                 },
                 icon: Icon(Icons.shopping_cart, color: Constants.primaryColor),
               ),

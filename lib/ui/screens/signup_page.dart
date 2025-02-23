@@ -9,7 +9,6 @@ import 'package:project_plant/models/database/databaseHelper.dart';
 import 'package:project_plant/ui/screens/signin_page.dart';
 import 'package:project_plant/ui/screens/widgets/custom_textfied.dart';
 import 'package:project_plant/ui/screens/widgets/password_strength_indicator.dart';
-// Thêm import cho DatabaseHelper
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -72,7 +71,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please accept the Terms and Conditions'),
+          content: Text('Vui lòng chấp nhận các điều khoản và điều kiện'),
           backgroundColor: Colors.red,
         ),
       );
@@ -82,7 +81,7 @@ class _SignUpBodyState extends State<SignUpBody> {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Passwords do not match'),
+          content: Text('Mật khẩu không khớp'),
           backgroundColor: Colors.red,
         ),
       );
@@ -94,50 +93,47 @@ class _SignUpBodyState extends State<SignUpBody> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return 'Email là bắt buộc';
     }
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-      return 'Please enter a valid email';
+      return 'Vui lòng nhập email hợp lệ';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'Mật khẩu là bắt buộc';
     }
     if (value.length < 8) {
-      return 'Password must be at least 8 characters';
+      return 'Mật khẩu phải có ít nhất 8 ký tự';
     }
     if (!value.contains(RegExp(r'[A-Z]'))) {
-      return 'Password must contain at least one uppercase letter';
+      return 'Mật khẩu phải chứa ít nhất một chữ cái viết hoa';
     }
     if (!value.contains(RegExp(r'[0-9]'))) {
-      return 'Password must contain at least one number';
+      return 'Mật khẩu phải chứa ít nhất một chữ số';
     }
     if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-      return 'Password must contain at least one special character';
+      return 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt';
     }
     return null;
   }
 
-  // Phương thức lưu thông tin người dùng vào SQLite
   Future<void> _registerUser() async {
     if (_validateInputs()) {
       final user = {
         'fullName': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
         'password': _passwordController.text.trim(),
-        'acceptTerms': _acceptTerms ? 1 : 0, // Lưu giá trị bool thành 1/0
+        'acceptTerms': _acceptTerms ? 1 : 0,
       };
 
-      // Lưu thông tin người dùng vào SQLite
       await DatabaseHelper.instance.createUser(user);
 
-      // Sau khi lưu, thông báo và chuyển hướng đến trang đăng nhập
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Account created successfully!'),
+          content: Text('Tạo tài khoản thành công!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -162,7 +158,7 @@ class _SignUpBodyState extends State<SignUpBody> {
         child: BlocListener<SignupBloc, SignupState>(
           listener: (context, state) {
             if (state is SignupSuccess) {
-              _registerUser(); // Gọi phương thức lưu người dùng vào cơ sở dữ liệu
+              _registerUser();
             } else if (state is SignupFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -193,8 +189,9 @@ class _SignUpBodyState extends State<SignUpBody> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
                     const Text(
-                      'Create Account',
+                      'Tạo Tài Khoản',
                       style: TextStyle(
                         fontSize: 28.0,
                         fontWeight: FontWeight.bold,
@@ -203,7 +200,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Start your journey with Planty today',
+                      'Bắt đầu hành trình của bạn với Planty hôm nay',
                       style: TextStyle(
                         fontSize: 16.0,
                         color: Colors.grey[600],
@@ -217,22 +214,24 @@ class _SignUpBodyState extends State<SignUpBody> {
                       icon: Icons.alternate_email,
                       validator: _validateEmail,
                     ),
+                    const SizedBox(height: 20),
                     CustomTextfield(
                       controller: _fullNameController,
                       obscureText: false,
-                      hintText: 'Full Name',
+                      hintText: 'Họ và Tên',
                       icon: Icons.person_outline,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Full name is required';
+                          return 'Họ và tên là bắt buộc';
                         }
                         return null;
                       },
                     ),
+                    const SizedBox(height: 20),
                     CustomTextfield(
                       controller: _passwordController,
                       obscureText: !_showPassword,
-                      hintText: 'Password',
+                      hintText: 'Mật khẩu',
                       icon: Icons.lock_outline,
                       validator: _validatePassword,
                       suffixIcon: IconButton(
@@ -249,17 +248,18 @@ class _SignUpBodyState extends State<SignUpBody> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 20),
                     CustomTextfield(
                       controller: _confirmPasswordController,
                       obscureText: !_showConfirmPassword,
-                      hintText: 'Confirm Password',
+                      hintText: 'Xác nhận Mật khẩu',
                       icon: Icons.lock_outline,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return 'Vui lòng xác nhận mật khẩu của bạn';
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return 'Mật khẩu không khớp';
                         }
                         return null;
                       },
@@ -277,6 +277,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                         },
                       ),
                     ),
+                    const SizedBox(height: 20),
                     CheckboxListTile(
                       value: _acceptTerms,
                       onChanged: (value) {
@@ -286,11 +287,11 @@ class _SignUpBodyState extends State<SignUpBody> {
                       },
                       title: RichText(
                         text: TextSpan(
-                          text: 'I accept the ',
+                          text: 'Tôi đồng ý với ',
                           style: TextStyle(color: Colors.grey[600]),
                           children: [
                             TextSpan(
-                              text: 'Terms and Conditions',
+                              text: 'Các điều khoản và điều kiện',
                               style: TextStyle(
                                 color: Constants.primaryColor,
                                 decoration: TextDecoration.underline,
@@ -302,9 +303,9 @@ class _SignUpBodyState extends State<SignUpBody> {
                       controlAffinity: ListTileControlAffinity.leading,
                       contentPadding: EdgeInsets.zero,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     GestureDetector(
-                      onTap: _registerUser, // Gọi phương thức đăng ký
+                      onTap: _registerUser,
                       child: Container(
                         width: size.width,
                         height: 55,
@@ -329,7 +330,7 @@ class _SignUpBodyState extends State<SignUpBody> {
                         ),
                         child: const Center(
                           child: Text(
-                            'Create Account',
+                            'Tạo Tài Khoản',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18.0,
@@ -353,11 +354,11 @@ class _SignUpBodyState extends State<SignUpBody> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            text: 'Already have an account? ',
+                            text: 'Đã có tài khoản? ',
                             style: TextStyle(color: Colors.grey[600]),
                             children: [
                               TextSpan(
-                                text: 'Login',
+                                text: 'Đăng nhập',
                                 style: TextStyle(
                                   color: Constants.primaryColor,
                                   fontWeight: FontWeight.bold,

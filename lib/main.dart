@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_plant/ui/screens/signin_page.dart';
 import 'ui/onboarding_screen.dart';
 
 void main() {
@@ -11,6 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/login': (context) => SignIn(),
+      },
       title: 'Onboarding Screen',
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
